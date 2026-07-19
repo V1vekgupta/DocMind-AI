@@ -1,141 +1,101 @@
-# DocMind AI — PDF Assistant (Backend)
+<div align="center">
 
-A Spring Boot backend that lets users upload PDFs and ask natural-language
-questions about them, answered using a Retrieval-Augmented Generation (RAG)
-pipeline: PDF parsing → chunking → embeddings → AstraDB vector search → Ollama
-Cloud LLM.
+<h1>📄 DocMind AI</h1>
+<h3>RAG-Powered PDF Chat Assistant</h3>
 
-> **Status:** Backend only. No frontend yet (CORS is pre-configured for a
-> Vite dev server at `http://localhost:5173` for when one is built).
+<p>
+  <img src="https://img.shields.io/badge/Status-Active-22c55e?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/PRs-Welcome-orange?style=for-the-badge" />
+</p>
 
-## Tech stack
+<p>
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" />
+  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" />
+  <img src="https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
+  <img src="https://img.shields.io/badge/SpringBoot-6DB33F?style=for-the-badge&logo=spring&logoColor=white" />
+  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" />
+  <img src="https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=jsonwebtokens" />
+  <img src="https://img.shields.io/badge/LangChain4j-1C3C3C?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/AstraDB-000000?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Ollama-white?style=for-the-badge&logo=ollama&logoColor=black" />
+</p>
 
-- **Java 21 / Spring Boot 3** — REST API, security, JPA
-- **PostgreSQL** — relational data (users, PDFs, conversations, messages)
-- **LangChain4j** — PDF parsing (Apache PDFBox), chunking, embeddings, LLM calls
-- **AstraDB (DataStax)** — Cassandra-based vector store for embeddings
-- **Ollama Cloud** — hosted LLM (`gpt-oss:20b`) for chat completions
-- **JWT + Spring Security** — stateless authentication
+> A full-stack RAG (Retrieval-Augmented Generation) application that lets users upload PDFs and have a real conversation with them — grounded answers, elaborated explanations, or live web search, all from a single chat interface.
 
-## Project structure
+**[Report Bug](https://github.com/V1vekgupta/DocMind-AI/issues)**
 
-```
-com.docmind
-├── config/       # non-security app config (AstraDB, Ollama, LangChain beans)
-├── security/      # JWT, Spring Security config, auth filter, user details
-├── controller/     # REST endpoints
-├── service/       # business logic (auth, PDF processing, chat/RAG)
-├── repository/     # Spring Data JPA repositories
-├── model/
-│   ├── entity/     # JPA entities
-│   └── dto/       # request/response DTOs
-├── exception/      # custom exceptions + global handler
-└── util/         # DtoMapper
-```
+</div>
 
-## Setup
+---
 
-### 1. Prerequisites
-- Java 21+
-- Maven 3.8+
-- PostgreSQL running locally (or update `DB_URL`)
-- An AstraDB database (vector-enabled) — https://astra.datastax.com
-- An Ollama Cloud API key — https://ollama.com
+## 📑 Table of Contents
+- [Description](#-description)
+- [What Makes This Stand Out](#-what-makes-this-stand-out)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [API Reference](#-api-reference)
+- [Quick Start](#-quick-start)
+- [Environment Variables](#-environment-variables)
+- [Screenshots](#-screenshots)
+- [Known Limitations & Future Improvements](#-known-limitations--future-improvements)
 
-### 2. Configure environment variables
+---
 
-`application.properties` is intentionally **not committed** (it's gitignored)
-because it would otherwise hold real secrets. Two ways to configure it:
+## 📝 Description
 
-**Option A — real environment variables** (recommended):
-```bash
-export DB_PASSWORD=your_real_password
-export JWT_SECRET=$(openssl rand -base64 48)
-export ASTRA_TOKEN=your_real_astra_token
-export ASTRA_DATABASE_ID=your_real_database_id
-export OLLAMA_API_KEY=your_real_ollama_key
-```
+DocMind AI is a production-style RAG pipeline built with **Spring Boot and React**: PDFs are parsed, chunked, embedded, and stored in a vector database, then retrieved and synthesized into natural-language answers by an LLM. On top of the standard "ask your PDF" pattern, it adds a **mode-aware chat system** — grounded, detailed, or live web search — each visually tagged in the UI so the user always knows where an answer came from.
 
-**Option B — local `.env` file** (this project already depends on
-`spring-dotenv`, so a `.env` file in `backend/` is picked up automatically):
-```bash
-cp backend/.env.example backend/.env
-# then fill in real values in backend/.env
-```
+---
 
-`backend/src/main/resources/application.properties.example` documents every
-property; copy it to `application.properties` if you'd rather not use env
-vars, but never commit that copy with real values in it.
+## 🎯 What Makes This Stand Out
 
-### 3. Run
+| Capability | Details |
+|---|---|
+| 🔐 **Security & Auth** | Spring Security with stateless JWT authentication, custom `UserDetailsService`, and a dedicated `security` package (not bundled into generic config) |
+| 🧠 **Real RAG Pipeline** | PDF parsing (Apache PDFBox) → chunking → embeddings → AstraDB vector search → Ollama Cloud LLM synthesis, orchestrated via LangChain4j |
+| 🎛️ **Mode-Aware Answers** | Three response modes — **Grounded** (strict, document-only), **Detailed** (structured elaboration), and **Web Search** (live results via Tavily/Serper) — auto-detected from phrasing or explicitly toggled |
+| 🌐 **Optional Live Web Search** | Pluggable provider (Tavily or Serper) with source-cited synthesis; gracefully falls back to the model's own knowledge if unconfigured, instead of failing |
+| 🗄️ **Dual-Database Architecture** | PostgreSQL for relational data (users, PDFs, conversations, messages) + AstraDB (Cassandra-based vector store) for embeddings |
+| 🛡️ **Clean Error Handling** | Centralized `GlobalExceptionHandler` mapping domain exceptions to proper HTTP status codes (400/401/404/503) instead of raw stack traces |
 
-```bash
-cd backend
-mvn spring-boot:run
-```
+---
 
-The API starts on `http://localhost:8080`.
+## ✨ Features
 
-## Key endpoints
+### 👤 User
+- Sign up and sign in with JWT-based session handling
+- Upload PDFs and track processing status in real time
+- Start a new chat per document or resume any past conversation
+- Toggle **Detailed** or **Web Search** mode via a "+" menu in the chat input
+- See which mode answered each message via a color-coded margin tag
 
-| Method | Path | Description |
-|---|---|---|
-| POST | `/api/auth/register` | Create an account |
-| POST | `/api/auth/login` | Get a JWT |
-| POST | `/api/pdfs` | Upload a PDF (multipart) |
-| GET | `/api/pdfs` | List your PDFs |
-| DELETE | `/api/pdfs/{id}` | Delete a PDF |
-| POST | `/api/pdfs/{id}/chat` | Ask a question about a PDF (RAG) |
-| GET | `/api/pdfs/{id}/conversations` | List conversations for a PDF |
+### 🧠 RAG / Chat Engine
+- Automatic text chunking and embedding on upload
+- Vector similarity search scoped to the authenticated user's own documents
+- Mode-aware prompt templates (concise vs. elaborated vs. web-synthesis)
+- Conversation history maintained and fed back into the model for context
 
-All endpoints except `/api/auth/**` and `GET /api/health` require
-`Authorization: Bearer <token>`.
+### 🔐 Authentication
+- Register with full name, email, and password (BCrypt-hashed)
+- Login to receive a stateless JWT for all protected routes
+- Expired/malformed tokens are handled gracefully (clean 401s, not server errors)
 
-### Response detail control
+---
 
-`POST /api/pdfs/{id}/chat` accepts an optional `responseStyle` field
-(`CONCISE` or `DETAILED`). If omitted, the backend auto-detects intent from
-the question text — e.g. asking "explain that in more detail" will
-automatically switch to a fuller, structured answer for that turn.
+## 🛠️ Tech Stack
 
-```json
-{
-  "question": "Summarize section 2 in more detail",
-  "conversationId": 12
-}
-```
+**Frontend:** React 19, Vite, React Router, Tailwind CSS v4, fetch-based API client
 
-### Web search ("+" icon)
+**Backend:** Spring Boot 3, Spring Security (JWT), Spring Data JPA, Maven
 
-The same endpoint accepts an optional `webSearch` boolean, meant to be set
-`true` when the user picks a web-search option in the chat UI (e.g. a "+"
-icon). If omitted, the backend also auto-detects intent from phrases like
-"search on internet" / "search on web".
+**AI / RAG:** LangChain4j, Ollama Cloud (LLM), AstraDB (vector store), Tavily / Serper (optional web search)
 
-```json
-{
-  "question": "What's the latest version of Spring Boot?",
-  "webSearch": true
-}
-```
+**Database:** PostgreSQL
 
-When `webSearch` is true, the backend calls a configured search provider
-(Tavily or Serper — pick one, see `.env.example`) and has the LLM synthesize
-an answer from the results, with inline source citations. If no provider key
-is configured yet, it automatically falls back to the LLM's own general
-knowledge instead of failing, and says so in the answer.
+**Tools:** Git, Postman
 
-**Note:** this is a live web search via a third-party search API, not a
-browsing agent — it works from short search snippets, not full pages, so the
-model is instructed to note that specific facts should be verified at the
-source.
+---
 
-## Known limitations / next steps
-
-- No automated tests yet beyond the default Spring context-load test.
-- No rate limiting on auth or chat endpoints.
-- PDF processing happens synchronously during upload; large files may be slow.
-- No frontend.
-
-See project notes for the fuller improvement backlog (async processing,
-pagination, refresh tokens, Docker, OpenAPI docs, etc.).
+## 📂 Project Structure
