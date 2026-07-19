@@ -1,0 +1,57 @@
+### === Java / Maven (backend) === ###
+target/
+*.class
+*.jar
+*.war
+*.ear
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### === Node / Vite (frontend) === ###
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+
+### === Environment variables (both) === ###
+.env
+.env.local
+.env.*.local
+!.env.example
+
+### === Spring Boot secrets === ###
+# Keeps real config out of git; *.example templates still get committed
+*.properties
+!application.properties.example
+
+### === Logs === ###
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+### === IDE / editor === ###
+.idea/
+.vscode/
+*.iml
+*.iws
+.settings/
+.classpath
+.project
+
+### === OS generated files === ###
+.DS_Store
+Thumbs.db
+
+### === Uploaded/user data (don't commit real files) === ###
+uploads/*
+!uploads/.gitkeep
+
+### === Misc === ###
+*.bak
+*.swp
+*.tmp

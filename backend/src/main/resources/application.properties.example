@@ -1,0 +1,59 @@
+# Copy this file to application.properties (or set these as real environment
+# variables) and fill in real values. application.properties is gitignored
+# and should NEVER be committed with real secrets.
+
+# Application
+spring.application.name=docmind-ai
+
+# Database
+spring.datasource.url=${DB_URL:jdbc:postgresql://localhost:5432/PDFMind}
+spring.datasource.username=${DB_USERNAME:postgres}
+spring.datasource.password=${DB_PASSWORD}
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+# File Upload
+spring.servlet.multipart.max-file-size=25MB
+spring.servlet.multipart.max-request-size=25MB
+
+# Server
+server.port=${SERVER_PORT:8080}
+
+# JWT - generate your own secret, e.g.: openssl rand -base64 48
+app.jwt.secret=${JWT_SECRET}
+app.jwt.expiration-ms=${JWT_EXPIRATION_MS:}
+
+# Upload Directory
+app.upload-dir=${UPLOAD_DIR:./uploads}
+
+# CORS
+app.cors-origins=${CORS_ORIGINS:http://localhost:5173}
+
+# Astra DB - get from https://astra.datastax.com
+app.astra.token=${ASTRA_TOKEN}
+app.astra.database-id=${ASTRA_DATABASE_ID}
+app.astra.region=${ASTRA_REGION:}
+app.astra.keyspace=${ASTRA_KEYSPACE:}
+app.astra.table=${ASTRA_TABLE:}
+app.astra.dimension=${ASTRA_DIMENSION:384}
+
+# Ollama - get an API key from https://ollama.com
+app.ollama.base-url=${OLLAMA_BASE_URL:https://ollama.com/v1}
+app.ollama.api-key=${OLLAMA_API_KEY}
+app.ollama.model=${OLLAMA_MODEL:gpt-oss:20b}
+
+# Web Search (optional) - powers the "+" / web search option in chat.
+# Pick ONE provider and only fill in that provider's key; leave the other blank.
+# Tavily: https://tavily.com (free tier available)
+app.websearch.provider=${WEB_SEARCH_PROVIDER:tavily}
+app.websearch.tavily-api-key=${TAVILY_API_KEY:}
+app.websearch.serper-api-key=${SERPER_API_KEY:}
+app.websearch.max-results=${WEB_SEARCH_MAX_RESULTS:5}
+
+# Logging
+logging.level.com.docmind=INFO
