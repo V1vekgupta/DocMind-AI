@@ -99,3 +99,167 @@ DocMind AI is a production-style RAG pipeline built with **Spring Boot and React
 ---
 
 ## 📂 Project Structure
+
+DocMind-AI/
+├── backend/                          # Spring Boot Backend
+│   ├── src/main/java/com/docmind/
+│   │   ├── controller/                # REST endpoints (Auth, PDF, Chat)
+│   │   ├── service/                   # Business logic (RAG, PDF processing, web search)
+│   │   ├── repository/                # Data access (JPA)
+│   │   ├── model/
+│   │   │   ├── entity/                # JPA entities
+│   │   │   └── dto/                   # Request/response DTOs
+│   │   ├── security/                  # JWT filter, Spring Security config, user details
+│   │   ├── config/                    # Non-security app config (AstraDB, Ollama, web search)
+│   │   └── exception/                 # Custom exceptions + global handler
+│   └── src/main/resources/
+│       └── application.properties.example
+│
+└── frontend/                         # React Frontend
+├── src/
+│   ├── api/                       # Backend API client
+│   ├── context/                   # Auth context
+│   ├── pages/                     # Login, Register, Dashboard
+│   └── components/                # Sidebar, ChatPane, ChatInput, MessageItem
+└── public/
+
+---
+
+## 🔑 API Reference
+
+> All protected routes require an `Authorization: Bearer <JWT>` header.
+
+### Authentication
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `POST` | `/api/auth/register` | Public | Register a new account |
+| `POST` | `/api/auth/login` | Public | Login and receive a JWT |
+| `GET` | `/api/auth/me` | Auth | Get the current user's profile |
+
+### PDFs
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `POST` | `/api/pdfs/upload` | Auth | Upload a PDF (multipart) for processing |
+| `GET` | `/api/pdfs` | Auth | List the current user's PDFs |
+| `GET` | `/api/pdfs/{id}` | Auth | Get a PDF's details and processing status |
+| `DELETE` | `/api/pdfs/{id}` | Auth | Delete a PDF and its conversations |
+
+### Conversations & Chat
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `GET` | `/api/conversations` | Auth | List all conversations |
+| `GET` | `/api/conversations/{id}` | Auth | Get a conversation with full message history |
+| `DELETE` | `/api/conversations/{id}` | Auth | Delete a conversation |
+| `POST` | `/api/pdfs/{id}/conversations` | Auth | Create a new conversation for a PDF |
+| `POST` | `/api/pdfs/{id}/chat` | Auth | Ask a question — supports `responseStyle` (`CONCISE`/`DETAILED`) and `webSearch` flags |
+
+---
+
+## ⚡ Quick Start
+
+### Prerequisites
+- Java 21+
+- Node.js 18+
+- PostgreSQL 14+
+- Maven 3.8+
+- An [AstraDB](https://astra.datastax.com) vector-enabled database
+- An [Ollama Cloud](https://ollama.com) API key
+- (Optional) A [Tavily](https://tavily.com) or [Serper](https://serper.dev) API key for live web search
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/V1vekgupta/DocMind-AI.git
+cd DocMind-AI
+
+# 2. Start the backend
+cd backend
+cp .env.example .env       # Fill in your credentials
+mvn spring-boot:run
+
+# 3. Start the frontend (new terminal)
+cd ../frontend
+cp .env.example .env       # Fill in your API base URL
+npm install
+npm run dev
+```
+
+> ⚠️ Make sure PostgreSQL is running and reachable before starting the backend.
+
+---
+
+## 🔐 Environment Variables
+
+### Backend — `backend/.env`
+```env
+DB_URL=jdbc:postgresql://localhost:5432/PDFMind
+DB_USERNAME=postgres
+DB_PASSWORD=your_db_password
+
+JWT_SECRET=your_jwt_secret_minimum_256_bits
+JWT_EXPIRATION_MS=86400000
+
+ASTRA_TOKEN=your_astra_db_token
+ASTRA_DATABASE_ID=your_astra_database_id
+
+OLLAMA_API_KEY=your_ollama_cloud_api_key
+
+# Optional — pick ONE provider, leave the other blank
+WEB_SEARCH_PROVIDER=tavily
+TAVILY_API_KEY=
+SERPER_API_KEY=
+```
+
+### Frontend — `frontend/.env`
+```env
+VITE_API_BASE_URL=http://localhost:8080
+```
+
+> ⚠️ Never commit `.env` or `application.properties` files. Use the committed `.example` templates instead.
+
+---
+
+## 📸 Screenshots
+
+<p align="center">
+<em>Add your own screenshots here — login screen, chat interface with mode tags, PDF sidebar, etc.</em>
+</p>
+
+---
+
+## 🌟 Known Limitations & Future Improvements
+
+- No automated test suite yet beyond the default Spring context-load test
+- No rate limiting on auth or chat endpoints
+- PDF processing runs synchronously on upload; large files may be slow
+- Mode tags only apply to answers from the current session — not persisted on historical messages
+- Deploy using Docker & CI/CD pipeline (GitHub Actions)
+- Add refresh tokens and stronger file-type validation
+- Add OpenAPI/Swagger docs and API rate limiting
+- Write unit and integration tests (JUnit 5, Mockito, React Testing Library)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to fork this repository and submit a pull request.
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Commit your changes: `git commit -m "feat: add your feature"`
+4. Push and open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+---
+
+<div align="center">
+
+Built with ❤️ by **[Vivek Gupta](https://github.com/V1vekgupta)**
+
+⭐ Star this repo if you found it useful!
+
+</div>
